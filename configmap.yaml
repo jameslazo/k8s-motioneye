@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  entrypoint.sh: |
+    #!/usr/bin/env sh
+    # We need to chown at startup time since volumes are mounted as root. This is fugly.
+    # mkdir -p /run/motioneye
+    # chown motion:motion /run/motioneye
+    [ -f '/etc/motioneye/motioneye.conf' ] || cp -a /etc/motioneye.conf.sample /etc/motioneye/motioneye.conf
+    exec /bin/dash -c "LANGUAGE=en exec /usr/local/bin/meyectl startserver -c /etc/motioneye/motioneye.conf"
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"entrypoint.sh":"#!/usr/bin/env sh\n# We need to chown at startup time since volumes are mounted as root. This is fugly.\n# mkdir -p /run/motioneye\n# chown motion:motion /run/motioneye\n[ -f '/etc/motioneye/motioneye.conf' ] || cp -a /etc/motioneye.conf.sample /etc/motioneye/motioneye.conf\nexec /bin/dash -c \"LANGUAGE=en exec /usr/local/bin/meyectl startserver -c /etc/motioneye/motioneye.conf\"\n"},"kind":"ConfigMap","metadata":{"annotations":{},"creationTimestamp":null,"name":"motioneye-entrypoint","namespace":"default"}}
+  creationTimestamp: "2025-02-16T20:49:09Z"
+  name: motioneye-entrypoint
+  namespace: motioneye
+  resourceVersion: "161204"
+  uid: ad116e5a-d766-4ba7-98a7-6640cb471666
