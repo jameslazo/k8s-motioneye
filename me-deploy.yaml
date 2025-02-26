@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: motioneye
+  namespace: motioneye
+  labels:
+    app: motioneye
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: motioneye
+  template:
+    metadata:
+      labels:
+        app: motioneye
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1002
+        fsGroup: 1002
+      containers:
+      - name: motioneye
+        image: ghcr.io/motioneye-project/motioneye:edge
+        command: ["/bin/sh", "/entrypoint.sh"]
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: run-volume
+          mountPath: /run/motioneye
+        - name: entrypoint-script
+          mountPath: /entrypoint.sh
+          subPath: entrypoint.sh
+        - name: config-volume
+          mountPath: /etc/motioneye
+        - name: media-volume
+          mountPath: /var/lib/motioneye
+        - name: localtime
+          mountPath: /etc/localtime
+          readOnly: true
+        ports:
+        - containerPort: 8765
+      volumes:
+      - name: me-pv
+        persistentVolumeClaim:
+          claimName: me-pvc
+#      - name: run-volume
+#        emptyDir: {}
+      - name: entrypoint-script
+        configMap:
+          name: motioneye-entrypoint
+      - name: config-volume
+        hostPath:
+         path: /etc/motioneye
+         type: Directory
+      - name: media-volume
+        hostPath:
+          path: /var/lib/motioneye
+          type: Directory
+      - name: localtime
+        hostPath:
+          path: /etc/localtime
+          type: File
+          
