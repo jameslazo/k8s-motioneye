@@ -16,20 +16,30 @@ spec:
         app: motioneye
     spec:
       securityContext:
-        runAsUser: 1001
-        runAsGroup: 1002
-        fsGroup: 1002
+        fsGroup: 44
+#      initContainers:
+#      - name: init-add-group
+#        image: busybox
+#        command: ["sh", "-c", "usermod -aG 44 motion-vid"]
+#        securityContext:
+#          runAsUser: 0
       containers:
       - name: motioneye
         image: ghcr.io/motioneye-project/motioneye:edge
-        command: ["/bin/sh", "/entrypoint.sh"]
         securityContext:
+          runAsUser: 1001
+          runAsGroup: 1002
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
             drop:
             - ALL
+        command: ["/bin/sh", "/entrypoint.sh"]
         volumeMounts:
+#        - name: webcam
+#          mountPath: /dev/video0
+        - name: me-pvc
+          mountPath: /mnt/k8s-pvcs/me
         - name: run-volume
           mountPath: /run/motioneye
         - name: entrypoint-script
@@ -45,11 +55,15 @@ spec:
         ports:
         - containerPort: 8765
       volumes:
-      - name: me-pv
+#      - name: webcam
+#        hostPath:
+#          path: /dev/video0
+#          type: CharDevice
+      - name: me-pvc
         persistentVolumeClaim:
           claimName: me-pvc
-#      - name: run-volume
-#        emptyDir: {}
+      - name: run-volume
+        emptyDir: {}
       - name: entrypoint-script
         configMap:
           name: motioneye-entrypoint
