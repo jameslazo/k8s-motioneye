@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.3.0 (2025-04-13)
+
+### Features
+
+- Pv/pvc for motioneye app
+  ([`44199c5`](https://github.com/jameslazo/k8s-motioneye/commit/44199c52fc322e12211b93ca27e2665d2ce7f745))
+
+
 ## v0.2.0 (2025-02-26)
 
 
